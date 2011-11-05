@@ -24,20 +24,20 @@ import java.util.Set;
  *
  * @author Gene McCulley
  */
-public class FixedMapMaker {
+public class FixedMapMaker<K> {
 
-    private final String[] keys;
+    private final K[] keys;
 
     /**
      * Create a FixedMapMaker for a defined set of keys.
      *
      * @param keys the keys to use
      */
-    public FixedMapMaker(String[] keys) {
+    public FixedMapMaker(K[] keys) {
         this.keys = keys.clone();
     }
 
-    private int indexOf(String name) {
+    private int indexOf(K name) {
         for (int i = 0; i < keys.length; i++) {
             if (keys[i].equals(name)) {
                 return i;
@@ -52,28 +52,28 @@ public class FixedMapMaker {
      *
      * @return a new Map that uses the keys defined in this FixedMapMaker
      */
-    public <V> Map<String, V> make() {
-        return new AbstractMap<String, V>() {
+    public <V> Map<K, V> make() {
+        return new AbstractMap<K, V>() {
 
             private final Object[] values = new Object[keys.length];
 
             @Override
-            public Object put(String k, Object v) {
+            public V put(K k, V v) {
                 int index = indexOf(k);
                 if (index == -1) {
                     throw new IllegalArgumentException(k + " is not a valid key");
                 }
 
-                Object old = values[index];
+                V old = (V)values[index];
                 values[index] = v;
                 return old;
             }
 
-            private Map.Entry<String, V> makeEntry(final int index) {
-                return new Map.Entry<String, V>() {
+            private Map.Entry<K, V> makeEntry(final int index) {
+                return new Map.Entry<K, V>() {
 
                     @Override
-                    public String getKey() {
+                    public K getKey() {
                         return keys[index];
                     }
 
@@ -92,12 +92,12 @@ public class FixedMapMaker {
             }
 
             @Override
-            public Set<Entry<String, V>> entrySet() {
-                return new AbstractSet<Entry<String, V>>() {
+            public Set<Entry<K, V>> entrySet() {
+                return new AbstractSet<Entry<K, V>>() {
 
                     @Override
-                    public Iterator<Entry<String, V>> iterator() {
-                        return new Iterator<Entry<String, V>>() {
+                    public Iterator<Entry<K, V>> iterator() {
+                        return new Iterator<Entry<K, V>>() {
 
                             /**
                              * Index of element to be returned by subsequent call to next().
@@ -116,9 +116,9 @@ public class FixedMapMaker {
                             }
 
                             @Override
-                            public Entry<String, V> next() {
+                            public Entry<K, V> next() {
                                 try {
-                                    Entry<String, V> next = makeEntry(cursor);
+                                    Entry<K, V> next = makeEntry(cursor);
                                     lastRet = cursor++;
                                     return next;
                                 } catch (IndexOutOfBoundsException e) {
