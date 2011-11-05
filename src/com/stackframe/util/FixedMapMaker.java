@@ -12,10 +12,10 @@ package com.stackframe.util;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class FixedMapMaker<K> {
 
-    private final K[] keys;
+    private final Map<K, Integer> keys = new HashMap<K, Integer>();
 
     /**
      * Create a FixedMapMaker for a defined set of keys.
@@ -34,17 +34,10 @@ public class FixedMapMaker<K> {
      * @param keys the keys to use
      */
     public FixedMapMaker(K[] keys) {
-        this.keys = keys.clone();
-    }
-
-    private int indexOf(K name) {
-        for (int i = 0; i < keys.length; i++) {
-            if (keys[i].equals(name)) {
-                return i;
-            }
+        int numKeys = keys.length;
+        for (int i = 0; i < numKeys; i++) {
+            this.keys.put(keys[i], i);
         }
-
-        return -1;
     }
 
     /**
@@ -55,12 +48,12 @@ public class FixedMapMaker<K> {
     public <V> Map<K, V> make() {
         return new AbstractMap<K, V>() {
 
-            private final Object[] values = new Object[keys.length];
+            private final Object[] values = new Object[keys.size()];
 
             @Override
             public V put(K k, V v) {
-                int index = indexOf(k);
-                if (index == -1) {
+                Integer index = keys.get(k);
+                if (index == null) {
                     throw new IllegalArgumentException(k + " is not a valid key");
                 }
 
@@ -69,12 +62,12 @@ public class FixedMapMaker<K> {
                 return old;
             }
 
-            private Map.Entry<K, V> makeEntry(final int index) {
+            private Map.Entry<K, V> makeEntry(final K key, final int index) {
                 return new Map.Entry<K, V>() {
 
                     @Override
                     public K getKey() {
-                        return keys[index];
+                        return key;
                     }
 
                     @Override
@@ -99,48 +92,40 @@ public class FixedMapMaker<K> {
                     public Iterator<Entry<K, V>> iterator() {
                         return new Iterator<Entry<K, V>>() {
 
-                            /**
-                             * Index of element to be returned by subsequent call to next().
-                             */
-                            int cursor = 0;
+                            private final Iterator<Entry<K, Integer>> i = keys.entrySet().iterator();
 
                             /**
-                             * Index of element returned by most recent call to next().  Reset to -1 if this element is deleted by
+                             * Key of element returned by most recent call to next().  Reset to null if this element is deleted by
                              * a call to remove().
                              */
-                            int lastRet = -1;
+                            private Entry<K, Integer> lastRet = null;
 
                             @Override
                             public boolean hasNext() {
-                                return cursor != size();
+                                return i.hasNext();
                             }
 
                             @Override
                             public Entry<K, V> next() {
-                                if (cursor == size()) {
-                                    throw new NoSuchElementException();
-                                } else {
-                                    Entry<K, V> next = makeEntry(cursor);
-                                    lastRet = cursor++;
-                                    return next;
-                                }
+                                lastRet = i.next();
+                                return makeEntry(lastRet.getKey(), lastRet.getValue());
                             }
 
                             @Override
                             public void remove() {
-                                if (lastRet == -1) {
+                                if (lastRet == null) {
                                     throw new IllegalStateException();
                                 }
 
-                                values[lastRet] = null;
-                                lastRet = -1;
+                                values[lastRet.getValue()] = null;
+                                lastRet = null;
                             }
                         };
                     }
 
                     @Override
                     public int size() {
-                        return keys.length;
+                        return keys.size();
                     }
                 };
             }
