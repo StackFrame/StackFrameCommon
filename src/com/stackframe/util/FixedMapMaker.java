@@ -64,7 +64,7 @@ public class FixedMapMaker<K> {
                     throw new IllegalArgumentException(k + " is not a valid key");
                 }
 
-                V old = (V)values[index];
+                V old = (V) values[index];
                 values[index] = v;
                 return old;
             }
@@ -117,12 +117,12 @@ public class FixedMapMaker<K> {
 
                             @Override
                             public Entry<K, V> next() {
-                                try {
+                                if (cursor == size()) {
+                                    throw new NoSuchElementException();
+                                } else {
                                     Entry<K, V> next = makeEntry(cursor);
                                     lastRet = cursor++;
                                     return next;
-                                } catch (IndexOutOfBoundsException e) {
-                                    throw new NoSuchElementException();
                                 }
                             }
 

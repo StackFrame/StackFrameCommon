@@ -6,7 +6,9 @@ package com.stackframe.util.test;
 
 import com.stackframe.util.FixedMapMaker;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -84,5 +86,19 @@ public class FixedMapMakerTest {
         map.put("time2", new Date());
         map.put("time3", new Date());
         Assert.assertNotNull(map.get("time2"));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testBounds() {
+        FixedMapMaker maker = new FixedMapMaker(new String[]{"speed", "size", "shape"});
+        Map<String, Object> map = maker.make();
+        map.put("speed", 12);
+        map.put("size", 4);
+        map.put("shape", "square");
+        Iterator<Map.Entry<String, Object>> i = map.entrySet().iterator();
+        i.next();
+        i.next();
+        i.next();
+        i.next();
     }
 }
