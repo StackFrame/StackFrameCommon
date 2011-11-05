@@ -10,6 +10,7 @@
  */
 package com.stackframe.sql;
 
+import com.stackframe.util.FixedMapMaker;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -30,6 +31,17 @@ public class SQLUtilities {
         // Inhibit construction as this class has only static functions.
     }
 
+    private static String[] getColumnNames(ResultSetMetaData rsmd) throws SQLException {
+        int columnCount = rsmd.getColumnCount();
+        String[] names = new String[columnCount];
+        for (int i = 1; i < columnCount + 1; i++) {
+            String name = rsmd.getColumnName(i);
+            names[i - 1] = name;
+        }
+
+        return names;
+    }
+
     /**
      * Given a PreparedStatement, execute it and load all of the values into a List of Map objects, keyed by column name.
      *
@@ -42,9 +54,10 @@ public class SQLUtilities {
         try {
             List<Map<String, Object>> entries = new ArrayList<Map<String, Object>>();
             ResultSetMetaData rsmd = rs.getMetaData();
+            FixedMapMaker mapMaker = new FixedMapMaker(getColumnNames(rsmd));
             int columnCount = rsmd.getColumnCount();
             while (rs.next()) {
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = mapMaker.make();
                 for (int i = 1; i < columnCount + 1; i++) {
                     String name = rsmd.getColumnName(i);
                     Object value = rs.getObject(i);
