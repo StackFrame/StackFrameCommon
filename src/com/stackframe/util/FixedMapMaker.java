@@ -37,35 +37,6 @@ public class FixedMapMaker {
         this.keys = keys.clone();
     }
 
-    private class IndexEntry<V> implements Map.Entry<String, V> {
-
-        private final int index;
-
-        private final V[] values;
-
-        public IndexEntry(int index, V[] values) {
-            this.index = index;
-            this.values = values;
-        }
-
-        @Override
-        public String getKey() {
-            return keys[index];
-        }
-
-        @Override
-        public V getValue() {
-            return values[index];
-        }
-
-        @Override
-        public V setValue(V v) {
-            V old = values[index];
-            values[index] = v;
-            return old;
-        }
-    }
-
     private int indexOf(String name) {
         for (int i = 0; i < keys.length; i++) {
             if (keys[i].equals(name)) {
@@ -98,6 +69,28 @@ public class FixedMapMaker {
                 return old;
             }
 
+            private Map.Entry<String, V> makeEntry(final int index) {
+                return new Map.Entry<String, V>() {
+
+                    @Override
+                    public String getKey() {
+                        return keys[index];
+                    }
+
+                    @Override
+                    public V getValue() {
+                        return (V) values[index];
+                    }
+
+                    @Override
+                    public V setValue(V v) {
+                        V old = (V) values[index];
+                        values[index] = v;
+                        return old;
+                    }
+                };
+            }
+
             @Override
             public Set<Entry<String, V>> entrySet() {
                 return new AbstractSet<Entry<String, V>>() {
@@ -125,7 +118,7 @@ public class FixedMapMaker {
                             @Override
                             public Entry<String, V> next() {
                                 try {
-                                    Entry<String, V> next = new IndexEntry(cursor, values);
+                                    Entry<String, V> next = makeEntry(cursor);
                                     lastRet = cursor++;
                                     return next;
                                 } catch (IndexOutOfBoundsException e) {
