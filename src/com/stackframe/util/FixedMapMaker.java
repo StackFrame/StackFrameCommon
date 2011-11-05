@@ -37,13 +37,13 @@ public class FixedMapMaker {
         this.keys = keys.clone();
     }
 
-    private class IndexEntry implements Map.Entry<String, Object> {
+    private class IndexEntry<V> implements Map.Entry<String, V> {
 
         private final int index;
 
-        private final Object[] values;
+        private final V[] values;
 
-        public IndexEntry(int index, Object[] values) {
+        public IndexEntry(int index, V[] values) {
             this.index = index;
             this.values = values;
         }
@@ -54,13 +54,13 @@ public class FixedMapMaker {
         }
 
         @Override
-        public Object getValue() {
+        public V getValue() {
             return values[index];
         }
 
         @Override
-        public Object setValue(Object v) {
-            Object old = values[index];
+        public V setValue(V v) {
+            V old = values[index];
             values[index] = v;
             return old;
         }
@@ -81,8 +81,8 @@ public class FixedMapMaker {
      *
      * @return a new Map that uses the keys defined in this FixedMapMaker
      */
-    public Map<String, Object> make() {
-        return new AbstractMap<String, Object>() {
+    public <V> Map<String, V> make() {
+        return new AbstractMap<String, V>() {
 
             private final Object[] values = new Object[keys.length];
 
@@ -99,12 +99,12 @@ public class FixedMapMaker {
             }
 
             @Override
-            public Set<Entry<String, Object>> entrySet() {
-                return new AbstractSet<Entry<String, Object>>() {
+            public Set<Entry<String, V>> entrySet() {
+                return new AbstractSet<Entry<String, V>>() {
 
                     @Override
-                    public Iterator<Entry<String, Object>> iterator() {
-                        return new Iterator<Entry<String, Object>>() {
+                    public Iterator<Entry<String, V>> iterator() {
+                        return new Iterator<Entry<String, V>>() {
 
                             /**
                              * Index of element to be returned by subsequent call to next().
@@ -123,9 +123,9 @@ public class FixedMapMaker {
                             }
 
                             @Override
-                            public Entry<String, Object> next() {
+                            public Entry<String, V> next() {
                                 try {
-                                    Entry<String, Object> next = new IndexEntry(cursor, values);
+                                    Entry<String, V> next = new IndexEntry(cursor, values);
                                     lastRet = cursor++;
                                     return next;
                                 } catch (IndexOutOfBoundsException e) {

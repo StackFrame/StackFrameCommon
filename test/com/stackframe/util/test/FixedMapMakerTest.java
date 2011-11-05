@@ -5,6 +5,7 @@
 package com.stackframe.util.test;
 
 import com.stackframe.util.FixedMapMaker;
+import java.util.Date;
 import java.util.Map;
 import junit.framework.Assert;
 import org.junit.After;
@@ -73,5 +74,15 @@ public class FixedMapMakerTest {
         Assert.assertEquals("square", map.get("shape"));
         Assert.assertEquals(12, map.get("speed"));
         Assert.assertEquals(3, map.size());
+    }
+
+    @Test()
+    public void testGeneric() {
+        FixedMapMaker maker = new FixedMapMaker(new String[]{"time1", "time2", "time3"});
+        Map<String, Date> map = maker.make();
+        map.put("time1", new Date());
+        map.put("time2", new Date());
+        map.put("time3", new Date());
+        Assert.assertNotNull(map.get("time2"));
     }
 }
