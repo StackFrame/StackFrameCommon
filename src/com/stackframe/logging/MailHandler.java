@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.ErrorManager;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
@@ -117,8 +118,7 @@ public class MailHandler extends Handler {
             try {
                 sendEmail(to, from, subject, formatted, host, port);
             } catch (Exception e) {
-                // FIXME: Use logger error reporter.
-                System.err.println("exception sending email: " + e);
+                getErrorManager().error("exception sending email", e, ErrorManager.FLUSH_FAILURE);
             }
         }
 
