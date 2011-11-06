@@ -10,7 +10,9 @@
  */
 package com.stackframe.logging;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
@@ -42,6 +44,12 @@ public class MailHandler extends Handler {
     private final String host;
 
     private final int port;
+
+    private final List<LogRecord> published = new ArrayList<LogRecord>();
+
+    private boolean closed = false;
+
+    private final int maximumRecords;
 
     private static Properties makeMailProperties(String from, String host, int port) {
         Properties props = new Properties();
@@ -75,13 +83,15 @@ public class MailHandler extends Handler {
     /**
      * Create a new MailHandler.
      *
+     * @param maximumRecords the maximum number of records that can be published before a flush() is forced
      * @param to the email address that log messages should be sent to
      * @param subject the subject to use for log message emails
      * @param from the email address that log messages will be from
      * @param host the SMTP server to send through
      * @param port the port to use when sending via SMTP
      */
-    public MailHandler(String to, String subject, String from, String host, int port) {
+    public MailHandler(int maximumRecords, String to, String subject, String from, String host, int port) {
+        this.maximumRecords = maximumRecords;
         this.to = to;
         this.subject = subject;
         this.from = from;
@@ -91,21 +101,39 @@ public class MailHandler extends Handler {
 
     @Override
     public void close() throws SecurityException {
+        flush();
+        closed = true;
     }
 
     @Override
-    public void flush() {
+    public synchronized void flush() {
+        if (closed) {
+            throw new IllegalStateException("Handler is closed.");
+        }
+
+        for (LogRecord lr : published) {
+            Formatter formatter = new SimpleFormatter();
+            String formatted = formatter.format(lr);
+            try {
+                sendEmail(to, from, subject, formatted, host, port);
+            } catch (Exception e) {
+                // FIXME: Use logger error reporter.
+                System.err.println("exception sending email: " + e);
+            }
+        }
+
+        published.clear();
     }
 
     @Override
-    public void publish(LogRecord lr) {
-        Formatter formatter = new SimpleFormatter();
-        String formatted = formatter.format(lr);
-        try {
-            sendEmail(to, from, subject, formatted, host, port);
-        } catch (Exception e) {
-            // FIXME: Use logger error reporter.
-            System.err.println("exception sending email: " + e);
+    public synchronized void publish(LogRecord lr) {
+        if (closed) {
+            throw new IllegalStateException("Handler is closed.");
+        }
+
+        published.add(lr);
+        if (published.size() >= maximumRecords) {
+            flush();
         }
     }
 }
