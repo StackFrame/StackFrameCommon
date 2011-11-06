@@ -112,11 +112,15 @@ public class MailHandler extends Handler {
             throw new IllegalStateException("Handler is closed.");
         }
 
-        for (LogRecord lr : published) {
+        if (!published.isEmpty()) {
+            StringBuilder buffer = new StringBuilder();
             Formatter formatter = new SimpleFormatter();
-            String formatted = formatter.format(lr);
+            for (LogRecord lr : published) {
+                buffer.append(formatter.format(lr));
+            }
+
             try {
-                sendEmail(to, from, subject, formatted, host, port);
+                sendEmail(to, from, subject, buffer.toString(), host, port);
             } catch (Exception e) {
                 getErrorManager().error("exception sending email", e, ErrorManager.FLUSH_FAILURE);
             }
