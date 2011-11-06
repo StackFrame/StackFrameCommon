@@ -11,12 +11,12 @@
 package com.stackframe.sql;
 
 import com.stackframe.util.FixedMapMaker;
+import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +65,46 @@ public class SQLUtilities {
                 }
 
                 entries.add(map);
+            }
+
+            return entries;
+        } finally {
+            rs.close();
+        }
+    }
+
+    /**
+     * Given a PreparedStatement, execute it and load all of the values into POJOs of a specified type.
+     *
+     * @param statement the PreparedStatement to execute
+     * @return a List of objects of type where values retrieved from the SQL query are assigned to fields of the same name as the columns
+     * @throws SQLException if a SQLException was thrown when executing the query
+     * @throws AssertionError if the POJO does not have an accessible constructor or is missing a field named after a column
+     */
+    public static <C> List<C> load(PreparedStatement statement, Class<C> type) throws SQLException {
+        ResultSet rs = statement.executeQuery();
+        try {
+            List<C> entries = new ArrayList<C>();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            while (rs.next()) {
+                try {
+                    C instance = type.newInstance();
+                    for (int i = 1; i < columnCount + 1; i++) {
+                        String name = rsmd.getColumnName(i);
+                        Object value = rs.getObject(i);
+                        Field field = type.getField(name);
+                        field.set(instance, value);
+                    }
+
+                    entries.add(instance);
+                } catch (InstantiationException ie) {
+                    throw new AssertionError(ie);
+                } catch (IllegalAccessException iae) {
+                    throw new AssertionError(iae);
+                } catch (NoSuchFieldException nsfe) {
+                    throw new AssertionError(nsfe);
+                }
             }
 
             return entries;
