@@ -1,6 +1,12 @@
 /*
  * Copyright 2011 StackFrame, LLC
- * All rights reserved.
+ *
+ * This is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3
+ * as published by the Free Software Foundation.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this file.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stackframe.swing;
 
@@ -15,8 +21,9 @@ import javax.swing.KeyStroke;
 import javax.swing.RootPaneContainer;
 
 /**
+ * Utilities that make dealing with Swing easier.
  *
- * @author mcculley
+ * @author Gene McCulley
  */
 public class SwingUtilities {
 
