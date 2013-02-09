@@ -46,6 +46,9 @@ public class SwingUtilities {
         };
         JRootPane rootPane = c.getRootPane();
         Toolkit toolkit = ((Component) c).getToolkit();
-        rootPane.registerKeyboardAction(closer, KeyStroke.getKeyStroke(KeyEvent.VK_W, toolkit.getMenuShortcutKeyMask()), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        rootPane.registerKeyboardAction(
+            closer, 
+            KeyStroke.getKeyStroke(KeyEvent.VK_W, toolkit.getMenuShortcutKeyMask()), 
+            JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 }
