@@ -88,7 +88,7 @@ public class ReflectionUtils {
      * Given a simple boolean property on a class, make a Predicate which invokes it.
      *
      * @param <T> The JavaBeans type to look up the property on
-     * @param c the Class of the JavaBeans typed, constrained to T
+     * @param c the Class of the JavaBeans type, constrained to T
      * @param property the property name
      * @return a Predicate which invokes the getter for the specified property
      */
