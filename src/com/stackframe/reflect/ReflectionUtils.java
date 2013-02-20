@@ -10,6 +10,7 @@
  */
 package com.stackframe.reflect;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -85,7 +86,8 @@ public class ReflectionUtils {
     }
 
     /**
-     * Given a simple boolean property on a class, make a Predicate which invokes it.
+     * Given a simple boolean property on a class, make a Predicate which
+     * invokes it.
      *
      * @param <T> The JavaBeans type to look up the property on
      * @param c the Class of the JavaBeans type, constrained to T
@@ -115,5 +117,102 @@ public class ReflectionUtils {
         } catch (IntrospectionException ie) {
             throw new AssertionError(ie);
         }
+    }
+
+    /**
+     * Given a simple boolean property on a class, make a Predicate which
+     * invokes it.
+     *
+     * Note that the version of this function which takes a Class parameter is
+     * better performing as it will only need to look up the method at creation
+     * time instead of at each invocation.
+     *
+     * @param property the property name
+     * @return a Predicate which invokes the getter for the specified property
+     */
+    public static <T> Predicate<T> predicateForProperty(final String property) {
+        return new Predicate<T>() {
+            @Override
+            public boolean apply(T t) {
+                try {
+                    Class c = t.getClass();
+                    PropertyDescriptor pd = propertyDescriptor(c, property);
+                    if (pd == null) {
+                        throw new IllegalArgumentException(String.format("property '%s' does not exist on class '%s'", property, c.getName()));
+                    }
+
+                    assert pd.getPropertyType() == boolean.class;
+                    Method getter = pd.getReadMethod();
+                    assert getter.getParameterTypes().length == 0;
+                    return (Boolean) getter.invoke(t, (Object[]) null);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * Given a simple property on a class, make a Function which invokes the
+     * getter.
+     *
+     * @param <T> The JavaBeans type to look up the property on
+     * @param c the Class of the JavaBeans type, constrained to T
+     * @param property the property name
+     * @return a Function which invokes the getter for the specified property
+     */
+    public static <F, T> Function<F, T> functionForProperty(Class<F> f, String property) {
+        try {
+            PropertyDescriptor pd = propertyDescriptor(f, property);
+            if (pd == null) {
+                throw new IllegalArgumentException(String.format("property '%s' does not exist on class '%s'", property, f.getName()));
+            }
+
+            final Method getter = pd.getReadMethod();
+            assert getter.getParameterTypes().length == 0;
+            return new Function<F, T>() {
+                @Override
+                public T apply(F f) {
+                    try {
+                        return (T) getter.invoke(f, (Object[]) null);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            };
+        } catch (IntrospectionException ie) {
+            throw new AssertionError(ie);
+        }
+    }
+
+    /**
+     * Given a simple property, make a Function which invokes the getter.
+     *
+     * Note that the version of this function which takes a Class parameter is
+     * better performing as it will only need to look up the method at creation
+     * time instead of at each invocation.
+     *
+     * @param property the property name
+     * @return a Function which invokes the getter for the specified property
+     */
+    public static <F, T> Function<F, T> functionForProperty(final String property) {
+        return new Function<F, T>() {
+            @Override
+            public T apply(F f) {
+                try {
+                    Class<F> c = (Class<F>) f.getClass();
+                    PropertyDescriptor pd = propertyDescriptor(c, property);
+                    if (pd == null) {
+                        throw new IllegalArgumentException(String.format("property '%s' does not exist on class '%s'", property, c.getName()));
+                    }
+
+                    Method getter = pd.getReadMethod();
+                    assert getter.getParameterTypes().length == 0;
+                    return (T) getter.invoke(f, (Object[]) null);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
     }
 }
