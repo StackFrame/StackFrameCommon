@@ -28,6 +28,9 @@ public class RangeUtilities {
     /**
      * Given a java.util.Date, return a java.sql.Date.
      *
+     * FIXME: This should probably be somewhere else as it has nothing to do
+     * with Range.
+     *
      * @param date the java.util.Date to convert
      * @return the date in java.sql.Date
      */
