@@ -15,6 +15,7 @@ import com.google.common.collect.Range;
 import java.util.Date;
 
 /**
+ * Useful functions for dealing with Range objects.
  *
  * @author Gene McCulley
  */
