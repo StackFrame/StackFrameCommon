@@ -28,8 +28,7 @@ public class RangeUtilities {
     /**
      * Given a java.util.Date, return a java.sql.Date.
      *
-     * FIXME: This should probably be somewhere else as it has nothing to do
-     * with Range.
+     * FIXME: This should probably be somewhere else as it has nothing to do with Range.
      *
      * @param date the java.util.Date to convert
      * @return the date in java.sql.Date
@@ -43,8 +42,7 @@ public class RangeUtilities {
     }
 
     /**
-     * Build an expression suitable for passing to JDBC as part of an SQL query
-     * from a date range.
+     * Build an expression suitable for passing to JDBC as part of an SQL query from a date range.
      *
      * @param column the name of the column
      * @param dateRange the Range
