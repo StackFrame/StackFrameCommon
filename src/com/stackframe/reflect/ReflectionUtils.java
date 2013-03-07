@@ -74,7 +74,26 @@ public class ReflectionUtils {
         return toString(o.getClass(), o).toString();
     }
 
+    /**
+     * Find a property on a class.
+     *
+     * @param c the Class to look for the property on
+     * @param property the property to look for
+     * @return a PropertyDescriptor for the property, or <code>null</code> if the property is not found
+     * @throws IntrospectionException if there is trouble introspecting Class c
+     */
     private static PropertyDescriptor propertyDescriptor(Class c, String property) throws IntrospectionException {
+        if (!c.isInterface()) {
+            // Look in interfaces first for the property as they are guaranteed to be publicly invokable.
+            Class[] interfaces = c.getInterfaces();
+            for (Class iface : interfaces) {
+                PropertyDescriptor pd = propertyDescriptor(iface, property);
+                if (pd != null) {
+                    return pd;
+                }
+            }
+        }
+
         PropertyDescriptor[] pds = Introspector.getBeanInfo(c).getPropertyDescriptors();
         for (PropertyDescriptor pd : pds) {
             if (pd.getName().equals(property)) {
