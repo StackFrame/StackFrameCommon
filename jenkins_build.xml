@@ -3,7 +3,7 @@
   <property name="bin_dir" location="build"/>
   <path id="compile.class.path">
     <pathelement path="lib/javax.mail.jar" />
-    <pathelement path="lib/guava-13.0.1.jar" />
+    <pathelement path="lib/guava-14.0-rc3.jar" />
   </path>
 
   <target name="default" description="Compile and build JAR." >
