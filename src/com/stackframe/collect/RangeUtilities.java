@@ -12,6 +12,7 @@ package com.stackframe.collect;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
+import static com.stackframe.sql.SQLUtilities.convert;
 import java.util.Date;
 
 /**
@@ -44,22 +45,6 @@ public class RangeUtilities {
     }
 
     /**
-     * Given a java.util.Date, return a java.sql.Date.
-     *
-     * FIXME: This should probably be somewhere else as it has nothing to do with Range.
-     *
-     * @param date the java.util.Date to convert
-     * @return the date in java.sql.Date
-     */
-    public static java.sql.Date toSQL(Date date) {
-        if (date instanceof java.sql.Date) {
-            return (java.sql.Date) date;
-        } else {
-            return new java.sql.Date(date.getTime());
-        }
-    }
-
-    /**
      * Build an expression suitable for passing to JDBC as part of an SQL query from a date range.
      *
      * @param column the name of the column
@@ -83,7 +68,7 @@ public class RangeUtilities {
             }
 
             Date lowerEndpoint = dateRange.lowerEndpoint();
-            java.sql.Date lowerDate = toSQL(lowerEndpoint);
+            java.sql.Date lowerDate = convert(lowerEndpoint);
             buf.append(String.format("%s %s '%s'", column, operator, lowerDate.toString()));
             if (dateRange.hasUpperBound()) {
                 buf.append(" AND ");
@@ -105,7 +90,7 @@ public class RangeUtilities {
             }
 
             Date upperEndpoint = dateRange.upperEndpoint();
-            java.sql.Date upperDate = toSQL(upperEndpoint);
+            java.sql.Date upperDate = convert(upperEndpoint);
             buf.append(String.format("%s %s '%s'", column, operator, upperDate.toString()));
         }
 

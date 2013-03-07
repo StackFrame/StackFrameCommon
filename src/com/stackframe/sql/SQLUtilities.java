@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 StackFrame, LLC
+ * Copyright 2011-2013 StackFrame, LLC
  *
  * This is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -17,6 +17,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -110,6 +112,20 @@ public class SQLUtilities {
             return entries;
         } finally {
             rs.close();
+        }
+    }
+
+    /**
+     * Given a java.util.Date, return a java.sql.Date.
+     *
+     * @param date the java.util.Date to convert
+     * @return the date in java.sql.Date
+     */
+    public static java.sql.Date convert(Date date) {
+        if (date instanceof java.sql.Date) {
+            return (java.sql.Date) date;
+        } else {
+            return new java.sql.Date(date.getTime());
         }
     }
 }
