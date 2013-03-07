@@ -64,8 +64,8 @@ public class ReflectionUtils {
     }
 
     /**
-     * Print out all of the fields in an object. This is useful as a debugging
-     * implementation of toString() that classes can delegate to.
+     * Print out all of the fields in an object. This is useful as a debugging implementation of toString() that classes can
+     * delegate to.
      *
      * @param o the Object to print
      * @return a String that contains all of the field names and their values
@@ -86,8 +86,7 @@ public class ReflectionUtils {
     }
 
     /**
-     * Given a simple boolean property on a class, make a Predicate which
-     * invokes it.
+     * Given a simple boolean property on a class, make a Predicate which invokes it.
      *
      * @param <T> The JavaBeans type to look up the property on
      * @param c the Class of the JavaBeans type, constrained to T
@@ -120,12 +119,10 @@ public class ReflectionUtils {
     }
 
     /**
-     * Given a simple boolean property on a class, make a Predicate which
-     * invokes it.
+     * Given a simple boolean property on a class, make a Predicate which invokes it.
      *
-     * Note that the version of this function which takes a Class parameter is
-     * better performing as it will only need to look up the method at creation
-     * time instead of at each invocation.
+     * Note that the version of this function which takes a Class parameter is better performing as it will only need to look up the
+     * method at creation time instead of at each invocation.
      *
      * @param property the property name
      * @return a Predicate which invokes the getter for the specified property
@@ -153,8 +150,7 @@ public class ReflectionUtils {
     }
 
     /**
-     * Given a simple property on a class, make a Function which invokes the
-     * getter.
+     * Given a simple property on a class, make a Function which invokes the getter.
      *
      * @param <T> The JavaBeans type to look up the property on
      * @param c the Class of the JavaBeans type, constrained to T
@@ -188,9 +184,8 @@ public class ReflectionUtils {
     /**
      * Given a simple property, make a Function which invokes the getter.
      *
-     * Note that the version of this function which takes a Class parameter is
-     * better performing as it will only need to look up the method at creation
-     * time instead of at each invocation.
+     * Note that the version of this function which takes a Class parameter is better performing as it will only need to look up the
+     * method at creation time instead of at each invocation.
      *
      * @param property the property name
      * @return a Function which invokes the getter for the specified property
@@ -199,8 +194,8 @@ public class ReflectionUtils {
         return new Function<F, T>() {
             @Override
             public T apply(F f) {
+                Class<F> c = (Class<F>) f.getClass();
                 try {
-                    Class<F> c = (Class<F>) f.getClass();
                     PropertyDescriptor pd = propertyDescriptor(c, property);
                     if (pd == null) {
                         throw new IllegalArgumentException(String.format("property '%s' does not exist on class '%s'", property, c.getName()));
@@ -210,7 +205,7 @@ public class ReflectionUtils {
                     assert getter.getParameterTypes().length == 0;
                     return (T) getter.invoke(f, (Object[]) null);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException(String.format("trouble with property '%s' on class '%s'", property, c.getName()), e);
                 }
             }
         };
