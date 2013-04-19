@@ -24,16 +24,17 @@ import java.util.Set;
 public class Numbers {
 
     /**
-     * Get a Set of all positive integers. This is useful for making Map objects that can work on any integer input. You do not want
-     * to try to iterate the returned Set.
+     * A Set of all positive integers. This is useful for making Map objects that can work on any integer input. You do not want to
+     * try to iterate the returned Set.
      *
      * The real utility in this is to deal with Java's lame type system. Because a boxed int and a boxed long of the same value
      * don't have equality as far as a hash map is concerned, it is hard to use a Map when one doesn't know if the key will be an
      * int or a long (as happens when using the JSP expression language).
-     *
-     * @return a Set of all long and int values.
      */
-    public static Set<Number> positiveIntegers() {
+    public static final Set<Number> positiveIntegers = positiveIntegers();
+
+    private static Set<Number> positiveIntegers() {
+        // Consider adding BigInteger and other subclasses of Number that are integers.
         Set<? extends Number> longKeys = ContiguousSet.create(Range.greaterThan(0L), DiscreteDomain.longs());
         Set<? extends Number> intKeys = ContiguousSet.create(Range.greaterThan(0), DiscreteDomain.integers());
         return Sets.union(longKeys, intKeys);
