@@ -29,7 +29,8 @@ public class Numbers {
      *
      * The real utility in this is to deal with Java's lame type system. Because a boxed int and a boxed long of the same value
      * don't have equality as far as a hash map is concerned, it is hard to use a Map when one doesn't know if the key will be an
-     * int or a long (as happens when using the JSP expression language).
+     * int or a long (as happens when using the JSP expression language). Using this in conjuction with Maps.asMap(), one can build
+     * a Map where any integer key can be used to invoke a Function, making it easy to expose lookups to JSP code.
      */
     public static final Set<Number> positiveIntegers = positiveIntegers();
 
