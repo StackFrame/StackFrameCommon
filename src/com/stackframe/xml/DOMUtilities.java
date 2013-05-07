@@ -11,9 +11,9 @@
 package com.stackframe.xml;
 
 import com.google.common.base.Function;
+import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterables;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -44,6 +44,27 @@ public class DOMUtilities {
     }
 
     /**
+     * Get a view of a NodeList as an Iterator.
+     *
+     * @param nodeList the NodeList to iterate over
+     * @return an Iterator that iterates over nodeList
+     */
+    public static Iterator<Node> iterator(final NodeList nodeList) {
+        return new AbstractIterator<Node>() {
+            private int index;
+
+            @Override
+            protected Node computeNext() {
+                if (index == nodeList.getLength()) {
+                    return endOfData();
+                }
+
+                return nodeList.item(index++);
+            }
+        };
+    }
+
+    /**
      * Get a view of a NodeList as an Iterable.
      *
      * @param nodeList the NodeList to iterate over
@@ -53,28 +74,7 @@ public class DOMUtilities {
         return new Iterable<Node>() {
             @Override
             public Iterator<Node> iterator() {
-                return new Iterator<Node>() {
-                    private int index;
-
-                    @Override
-                    public boolean hasNext() {
-                        return index < nodeList.getLength();
-                    }
-
-                    @Override
-                    public Node next() {
-                        if (index == nodeList.getLength()) {
-                            throw new NoSuchElementException();
-                        }
-
-                        return nodeList.item(index++);
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException("remove() is not supported");
-                    }
-                };
+                return DOMUtilities.iterator(nodeList);
             }
         };
     }
