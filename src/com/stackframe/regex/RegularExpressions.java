@@ -45,14 +45,11 @@ public class RegularExpressions {
      */
     public static boolean matches(Iterable<Pattern> patterns, CharSequence input) {
         for (Pattern pattern : patterns) {
-            System.err.println("testing pattern='" + pattern + "' against input='" + input + "'");
             if (pattern.matcher(input).matches()) {
-                System.err.println("matches!");
                 return true;
             }
         }
 
-        System.err.println("does not match");
         return false;
     }
 
