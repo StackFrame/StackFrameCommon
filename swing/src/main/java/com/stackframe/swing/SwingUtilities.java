@@ -10,15 +10,10 @@
  */
 package com.stackframe.swing;
 
-import java.awt.Component;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import javax.swing.JComponent;
-import javax.swing.JRootPane;
-import javax.swing.KeyStroke;
-import javax.swing.RootPaneContainer;
 
 /**
  * Utilities that make dealing with Swing easier.
@@ -37,13 +32,7 @@ public class SwingUtilities {
      * @param c
      */
     public static void installCloseKey(final RootPaneContainer c) {
-        ActionListener closer = new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                ((Component) c).setVisible(false);
-            }
-        };
+        ActionListener closer = (e) -> ((Component) c).setVisible(false);
         JRootPane rootPane = c.getRootPane();
         Toolkit toolkit = ((Component) c).getToolkit();
         rootPane.registerKeyboardAction(
