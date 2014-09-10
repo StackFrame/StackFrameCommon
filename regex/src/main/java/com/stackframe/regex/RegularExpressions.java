@@ -13,6 +13,7 @@ package com.stackframe.regex;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import java.util.regex.Pattern;
+import java.util.stream.StreamSupport;
 
 /**
  * Utilities for dealing with regular expressions.
@@ -44,13 +45,7 @@ public class RegularExpressions {
      * @return true if the input matches any of the patterns
      */
     public static boolean matches(Iterable<Pattern> patterns, CharSequence input) {
-        for (Pattern pattern : patterns) {
-            if (pattern.matcher(input).matches()) {
-                return true;
-            }
-        }
-
-        return false;
+        return StreamSupport.stream(patterns.spliterator(), false).anyMatch(pattern -> pattern.matcher(input).matches());
     }
 
     /**

@@ -10,13 +10,7 @@
  */
 package com.stackframe.util;
 
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A factory that makes maps with a fixed set of keys. A collection of such maps uses less memory than a collection of HashMap
@@ -26,7 +20,7 @@ import java.util.Set;
  */
 public class FixedMapMaker<K> {
 
-    private final Map<K, Integer> keys = new HashMap<>();
+    private final Map<K, Integer> keys;
 
     /**
      * Create a FixedMapMaker for a defined set of keys.
@@ -35,9 +29,9 @@ public class FixedMapMaker<K> {
      */
     public FixedMapMaker(K[] keys) {
         int numKeys = keys.length;
-        for (int i = 0; i < numKeys; i++) {
+        this.keys = new HashMap<>(numKeys);
+        for (int i = 0; i < numKeys; i++)
             this.keys.put(keys[i], i);
-        }
     }
 
     /**
