@@ -13,9 +13,12 @@ package com.stackframe.xml;
 import com.google.common.base.Function;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterables;
-import java.util.Iterator;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.util.Iterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Utilities for use with XML DOM objects.
@@ -26,6 +29,16 @@ public class DOMUtilities {
 
     private DOMUtilities() {
         // Inhibit construction as this is a utility class.
+    }
+
+    /**
+     * Convert a nodelist to a Stream.
+     * @param nl The list
+     * @param parallel True to create a parallel stream
+     * @return The stream
+     */
+    public static  Stream<String> stream(NodeList nl, boolean parallel) {
+        return StreamSupport.stream(values(nl).spliterator(), parallel);
     }
 
     /**

@@ -12,8 +12,11 @@ package com.stackframe.collect;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
-import static com.stackframe.sql.SQLUtilities.convert;
+
 import java.util.Date;
+import java.util.stream.StreamSupport;
+
+import static com.stackframe.sql.SQLUtilities.convert;
 
 /**
  * Useful functions for dealing with Range objects.
@@ -35,13 +38,7 @@ public class RangeUtilities {
      * @return true if value is contained in any of the ranges
      */
     public static <C extends Comparable> boolean contains(Iterable<Range<C>> ranges, C value) {
-        for (Range<C> r : ranges) {
-            if (r.contains(value)) {
-                return true;
-            }
-        }
-
-        return false;
+        return StreamSupport.stream(ranges.spliterator(), false).anyMatch(r -> r.contains(value));
     }
 
     /**
